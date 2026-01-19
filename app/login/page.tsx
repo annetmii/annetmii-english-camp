@@ -1,54 +1,78 @@
 "use client";
 
-import { useState } from "react";
-import { createBrowserClient } from "@supabase/ssr";
+import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { supabaseBrowser } from "@/lib/supabaseBrowser";
 
 export default function LoginPage() {
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  const router = useRouter();
+  const supabase = useMemo(() => supabaseBrowser(), []);
 
   const [email, setEmail] = useState("");
-  const [sent, setSent] = useState(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [password, setPassword] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<string | null>(null);
 
-  const signIn = async () => {
-    setErrorMsg(null);
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: "https://annetmii-english-camp.vercel.app",
-      },
-    });
-    if (error) setErrorMsg(error.message);
-    else setSent(true);
+  const onSignIn = async () => {
+    setBusy(true);
+    setMsg(null);
+
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+    setBusy(false);
+
+    if (error) {
+      setMsg(error.message);
+      return;
+    }
+
+    router.replace("/home");
   };
 
   return (
-    <main style={{ maxWidth: 520, margin: "40px auto", padding: 16 }}>
-      <h1>Sign in</h1>
+    <main className="ec-wrap">
+      <header className="ec-topbar">
+        <Link href="/" className="ec-pill">
+          Back
+        </Link>
+        <div />
+      </header>
 
-      {sent ? (
-        <p>Check your email and click the login link.</p>
-      ) : (
-        <>
-          <input
-            type="email"
-            placeholder="you@your-company.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            style={{ width: "100%", padding: 12, fontSize: 16 }}
-          />
-          <button
-            onClick={signIn}
-            style={{ marginTop: 12, padding: 12, width: "100%", fontSize: 16 }}
-          >
-            Send login link
-          </button>
-          {errorMsg ? <p style={{ marginTop: 12 }}>{errorMsg}</p> : null}
-        </>
-      )}
+      <section className="ec-card">
+        <div style={{ display: "grid", gap: 12 }}>
+          <label className="ec-label">
+            Email
+            <input
+              className="ec-input"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="info@annetmii.com"
+              autoCapitalize="none"
+              autoCorrect="off"
+            />
+          </label>
+
+          <label className="ec-label">
+            Password
+            <input
+              className="ec-input"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="password"
+              type="password"
+            />
+          </label>
+
+          <div style={{ display: "flex", justifyContent: "center", marginTop: 4 }}>
+            <button className="ec-btn" onClick={onSignIn} disabled={busy} style={{ minWidth: 200 }}>
+              Sign in
+            </button>
+          </div>
+
+          {msg && <div className="ec-error">{msg}</div>}
+        </div>
+      </section>
     </main>
   );
 }
