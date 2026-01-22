@@ -58,6 +58,10 @@
   }
 }
 
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 @layer base {
   * {
     @apply border-border;
@@ -256,4 +260,35 @@ a { color: inherit; }
 /* Optional: make tiles feel consistent with pill/button */
 .ec-pill {
   background: white;
+}
+
+.ec-person-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 640px) {
+  .ec-person-row {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .ec-person-card {
+    min-width: 220px;
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+}
+
+/* --- Make buttons more prominent (border thicker than card borders) --- */
+.ec-pill,
+.ec-btn,
+.ec-icon {
+  border-width: 2px !important;
+  border-color: rgba(0, 0, 0, 0.35) !important;
 }

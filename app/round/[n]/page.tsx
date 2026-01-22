@@ -46,12 +46,12 @@ async function RoundInner({
           </Link>
         </header>
 
-        <h1 style={{ margin: 0 }}>Round not found</h1>
-        <div style={{ marginTop: 10 }}>
-          <Link href="/home" style={pillButton}>
-            Back
-          </Link>
-        </div>
+<h1 style={{ margin: 0 }}>Round not found</h1>
+<div style={{ marginTop: 10 }}>
+  <Link href="/home" className="ec-pill">
+    Back
+  </Link>
+</div>
       </main>
     );
   }
@@ -75,17 +75,21 @@ async function RoundInner({
         </Link>
       </header>
 
-      <section style={card}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div style={avatarFrame}>
-            <Image src={character.img} alt={character.name} width={72} height={72} />
-          </div>
-          <div style={{ display: "grid", gap: 4 }}>
-            <div style={{ fontWeight: 800 }}>Scene {sceneN}</div>
-            <div style={{ fontWeight: 800 }}>Round {round.n} / 3</div>
-            <div style={{ opacity: 0.85 }}>{character.name}</div>
-          </div>
-        </div>
+<section style={card}>
+  {/* Scene をヘッダーとして独立させる */}
+  <div style={{ fontWeight: 900, fontSize: 20, marginBottom: 8, letterSpacing: "0.2px" }}>
+    Scene {sceneN}
+  </div>
+
+  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+    <div style={avatarFrame}>
+      <Image src={character.img} alt={character.name} width={72} height={72} />
+    </div>
+    <div style={{ display: "grid", gap: 4 }}>
+      <div style={{ fontWeight: 800, fontSize: 16 }}>Round {round.n} / 3</div>
+      <div style={{ opacity: 0.85 }}>{character.name}</div>
+    </div>
+  </div>
 
         <div style={{ marginTop: 12, display: "grid", gap: 10 }}>
           <div>
@@ -95,21 +99,30 @@ async function RoundInner({
 
           <div>
             <div style={label}>相手のセリフ</div>
-            <div style={{ opacity: 0.92 }}>{round.partnerLineEn}</div>
+<div style={{ opacity: 0.92, fontSize: 16, fontWeight: 600, lineHeight: 1.5 }}>
+  {round.partnerLineEn}
+</div>
           </div>
         </div>
 
         <RoundClient round={round} sceneN={sceneN} />
 
-        <div style={{ marginTop: 14, display: "flex", justifyContent: "space-between" }}>
-          <Link href={backHref} style={pillButton}>
-            Back
-          </Link>
+<div
+  style={{
+    marginTop: 14,
+    display: "flex",
+    justifyContent: "space-between",
+    gap: 10,
+  }}
+>
+  <Link href={backHref} className="ec-pill">
+    Back
+  </Link>
 
-          <Link href={nextHref} style={pillButton}>
-            {roundN === 3 ? "Go to Summary" : "Next Round"}
-          </Link>
-        </div>
+  <Link href={nextHref} className="ec-pill">
+    {roundN === 3 ? "Go to Summary" : "Next Round"}
+  </Link>
+</div>
       </section>
     </main>
   );
@@ -133,16 +146,6 @@ const avatarFrame: React.CSSProperties = {
   borderRadius: 16,
   overflow: "hidden",
   border: "1px solid rgba(0,0,0,0.12)",
-};
-
-const pillButton: React.CSSProperties = {
-  border: "1px solid rgba(0,0,0,0.15)",
-  borderRadius: 999,
-  padding: "10px 14px",
-  background: "white",
-  fontWeight: 700,
-  textDecoration: "none",
-  display: "inline-block",
 };
 
 const linkStyle: React.CSSProperties = {

@@ -104,8 +104,6 @@ export default function CoachPage() {
         </Link>
       </header>
 
-      <h1 style={{ marginTop: 12, marginBottom: 10 }}>Coach</h1>
-
       {email && email !== COACH_EMAIL && (
         <div
           style={{
@@ -122,6 +120,7 @@ export default function CoachPage() {
 
       <section
         style={{
+          marginTop: 12,
           border: "1px solid rgba(0,0,0,0.12)",
           borderRadius: 16,
           padding: 14,
@@ -188,6 +187,12 @@ export default function CoachPage() {
                     <span
                       style={{
                         border: "1px solid rgba(0,0,0,0.12)",
+background:
+      row.status === "Correct"
+        ? "rgba(0,128,0,0.08)"   // 薄緑
+        : row.status === "Almost"
+        ? "rgba(255,0,0,0.08)"   // 薄赤
+        : "transparent",
                         borderRadius: 999,
                         padding: "8px 10px",
                         fontSize: 13,

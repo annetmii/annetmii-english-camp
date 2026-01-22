@@ -17,22 +17,35 @@ export default function LandingPage() {
             <Image src="/logo.png" alt="annetmii English Camp" width={240} height={240} priority />
           </div>
 
+          {/* ここから中央揃えブロック */}
           <div style={{ textAlign: "center" }}>
             <div style={{ fontWeight: 900, fontSize: 22 }}>
-  anne<span style={{ color: "#ec0f02" }}>t</span>mii English Camp
-</div>
-            <div style={{ opacity: 0.78, marginTop: 8, lineHeight: 1.5 }}>
-              Practice English for Real Work
-              <br />
-              15 minutes. One scene. Real output.
+              anne<span style={{ color: "#ec0f02" }}>t</span>mii English Camp
+            </div>
+
+            <div
+              style={{
+                marginTop: 10,
+                maxWidth: 320,
+                marginLeft: "auto",
+                marginRight: "auto",
+                opacity: 0.78,
+                fontSize: "clamp(13px, 3.6vw, 16px)",
+                lineHeight: 1.35,
+                letterSpacing: "0.2px",
+              }}
+            >
+              <div>Practice English for Real Work</div>
+              <div>15 minutes. One scene. Real output.</div>
+            </div>
+
+            <div style={{ width: "100%", display: "flex", justifyContent: "center", marginTop: 10 }}>
+              <Link href="/home" className="ec-btn" style={{ textDecoration: "none", minWidth: 200, textAlign: "center" }}>
+                Start
+              </Link>
             </div>
           </div>
-
-          <div style={{ width: "100%", display: "flex", justifyContent: "center", marginTop: 6 }}>
-            <Link href="/home" className="ec-btn" style={{ textDecoration: "none", minWidth: 200, textAlign: "center" }}>
-              Start
-            </Link>
-          </div>
+          {/* ここまで */}
         </div>
       </section>
     </main>

@@ -142,10 +142,10 @@ export default function TapTwoSentenceBuilder({
   style={{
     border: "1px solid rgba(0,0,0,0.15)",
     borderRadius: 14,
-    padding: 12,
-    paddingBottom: 6, // ← ここを追加
+    padding: 10,
+    paddingBottom: 6,
     display: "grid",
-    gap: 10,
+    gap: 8,
     boxSizing: "border-box",
     width: "100%",
     maxWidth: "100%",
@@ -192,7 +192,6 @@ export default function TapTwoSentenceBuilder({
       className="ec-btn"
       disabled={status === "saving"}
       style={{ width: "100%", textAlign: "center" }}
-      type="button"
     >
       Reset
     </button>
@@ -202,7 +201,6 @@ export default function TapTwoSentenceBuilder({
       className="ec-btn"
       disabled={status === "saving"}
       style={{ width: "100%", textAlign: "center" }}
-      type="button"
     >
       Submit
     </button>
@@ -219,24 +217,24 @@ export default function TapTwoSentenceBuilder({
   </div>
 </div>
 
-{result !== "idle" ? (
-  <div
-    style={{
-      padding: 12,
-      borderRadius: 12,
-      border: "1px solid rgba(0,0,0,0.15)",
-      fontWeight: 700,
-      fontSize: 18,
-      background:
-        result === "correct"
-          ? "rgba(0, 128, 0, 0.06)"
-          : "rgba(255, 0, 0, 0.06)",
-    }}
-  >
-    {result === "correct" ? "Correct" : "Almost"}
-  </div>
-) : null}
-      </div>
+      {result !== "idle" ? (
+        <div
+          style={{
+            padding: 12,
+            borderRadius: 12,
+            border: "1px solid rgba(0,0,0,0.15)",
+            fontWeight: 700,
+            fontSize: 18,
+            textAlign: "center",
+            background:
+              result === "correct"
+                ? "rgba(0, 128, 0, 0.06)"
+                : "rgba(255, 0, 0, 0.06)",
+          }}
+        >
+          {result === "correct" ? "Correct" : "Almost"}
+        </div>
+      ) : null}
 
       <div style={poolWrap}>
         <div style={{ display: "grid", gap: 8 }}>
@@ -261,9 +259,6 @@ export default function TapTwoSentenceBuilder({
           </div>
         </div>
       </div>
-    </section>
-  );
-}
 
 const btnStyle: React.CSSProperties = {
   padding: "10px 12px",
@@ -273,7 +268,10 @@ const btnStyle: React.CSSProperties = {
 };
 
 const sentenceBox: React.CSSProperties = {
-  padding: 10,
+  paddingTop: 10,
+  paddingRight: 10,
+  paddingLeft: 10,
+  paddingBottom: 6, // 下だけ詰める
   borderRadius: 12,
   border: "1px solid rgba(0,0,0,0.12)",
 };

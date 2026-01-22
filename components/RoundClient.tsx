@@ -113,17 +113,23 @@ setSceneToStorage(current);
         onSubmit={handleSubmit}
       />
 
-      {savedRow && (
-        <div
-          style={{
-            marginTop: 14,
-            border: "1px solid rgba(0,0,0,0.12)",
-            borderRadius: 16,
-            padding: 14,
-            display: "grid",
-            gap: 10,
-          }}
-        >
+{savedRow && (
+  <div
+    style={{
+      marginTop: 14,
+      border: "1px solid rgba(0,0,0,0.12)",
+      borderRadius: 16,
+      padding: 14,
+      display: "grid",
+      gap: 10,
+      background:
+        savedRow.status === "Correct"
+          ? "rgba(0, 128, 0, 0.06)"
+          : savedRow.status === "Almost"
+          ? "rgba(255, 0, 0, 0.06)"
+          : "white",
+    }}
+  >
 
           <div style={{ opacity: 0.92 }}>
             <div style={{ fontWeight: 700, marginBottom: 6 }}>判定</div>

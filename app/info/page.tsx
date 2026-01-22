@@ -18,11 +18,19 @@ export default function InfoPage() {
         <div style={{ marginTop: 6 }}>
           <div style={sectionTitle}>登場人物</div>
 
-          <div style={grid3}>
-<PersonCard img="/manager.png" name="Manager" role="上司" desc="報告・提案の相手" />
-<PersonCard img="/colleague.png" name="Colleague" role="同僚" desc="状況共有・相談の相手" />
-<PersonCard img="/staff.png" name="Staff" role="部下" desc="依頼・調整・協力要請の相手" />
-          </div>
+<div className="ec-person-row">
+  <div className="ec-person-card">
+    <PersonCard img="/manager.png" name="Manager" role="上司" desc="報告・提案の相手" />
+  </div>
+
+  <div className="ec-person-card">
+    <PersonCard img="/colleague.png" name="Colleague" role="同僚" desc="状況共有・相談の相手" />
+  </div>
+
+  <div className="ec-person-card">
+    <PersonCard img="/staff.png" name="Staff" role="部下" desc="依頼・調整・協力要請の相手" />
+  </div>
+</div>
         </div>
 
         <div style={{ marginTop: 18 }}>
@@ -42,11 +50,19 @@ export default function InfoPage() {
 </p>
         </div>
 
-        <div style={{ marginTop: 16, display: "flex", justifyContent: "center" }}>
-          <Link href="/home" className="ec-btn" style={{ textDecoration: "none" }}>
-            Start
-          </Link>
-        </div>
+<div style={{ width: "100%", display: "flex", justifyContent: "center", marginTop: 10 }}>
+  <Link
+    href="/home"
+    className="ec-btn"
+    style={{
+      textDecoration: "none",
+      minWidth: 200,
+      textAlign: "center",
+    }}
+  >
+    Start
+  </Link>
+</div>
       </section>
     </main>
   );
@@ -72,15 +88,7 @@ function PersonCard({
       <div style={{ fontWeight: 800, marginTop: 8 }}>{name}</div>
       <div style={{ opacity: 0.75, fontSize: 12, marginTop: 2 }}>{role}</div>
 
-      <div
-        style={{
-          marginTop: 6,
-          fontSize: 12,
-          opacity: 0.7,
-          lineHeight: 1.4,
-          textAlign: "center",
-        }}
-      >
+      <div style={{ opacity: 0.75, fontSize: 12, marginTop: 8, lineHeight: 1.4 }}>
         {desc}
       </div>
     </div>

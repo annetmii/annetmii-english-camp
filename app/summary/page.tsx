@@ -174,11 +174,20 @@ export default function SummaryPage() {
 
                   {r && (
                     <>
-                      <pre style={{ marginTop: 8 }}>
-{r.sentence1_built}
-{`\n`}
-{r.sentence2_built}
-                      </pre>
+<pre
+  style={{
+    marginTop: 8,
+    whiteSpace: "pre-wrap",     // 改行は維持しつつ折り返す
+    overflowWrap: "anywhere",   // 長い英単語でもはみ出さない
+    wordBreak: "break-word",    // 念のため
+    maxWidth: "100%",           // 枠内に収める
+    margin: 0,                  // 余白が原因でズレるのを防ぐ（任意だが安全）
+  }}
+>
+  {r.sentence1_built ?? ""}
+  {"\n"}
+  {r.sentence2_built ?? ""}
+</pre>
 
                       <div style={{ fontSize: 12, opacity: 0.7 }}>
                         提出日時: {fmt(r.created_at)}
