@@ -32,8 +32,13 @@ const now = new Date();
 const jst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
 setDateStr(jst.toISOString().slice(0, 10));      
 const n = await computeCurrentScene(supabase, user.id);
-      setSceneN(n);
-      setSceneToStorage(n);
+
+if (n === 1) {
+  localStorage.removeItem("scene");
+}
+
+setSceneN(n);
+setSceneToStorage(n);
     })();
   }, [supabase]);
 

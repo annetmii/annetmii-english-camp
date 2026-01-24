@@ -4,26 +4,36 @@ import { useEffect, useMemo, useState } from "react";
 import TapTwoSentenceBuilder from "@/components/TapTwoSentenceBuilder";
 import { supabaseBrowser } from "@/lib/supabaseBrowser";
 import type { RoundContent } from "@/components/content";
-import { computeCurrentScene, setSceneToStorage, getSceneFromStorage } from "@/lib/scene";
+import { SCENE_CHUNKS, getSceneRoles } from "@/components/content";
+import { computeCurrentScene, setSceneToStorage } from "@/lib/scene";
 
-export default function RoundClient({ round, sceneN }: { round: RoundContent; sceneN: number }) {
+export default function RoundClient({
+  round,
+  sceneN,
+}: {
+  round: RoundContent;
+  sceneN: number;
+}) {
   const supabase = useMemo(() => supabaseBrowser(), []);
+  const chunk = SCENE_CHUNKS[sceneN];
+  const roles = getSceneRoles(sceneN);
 
   const [sessionEmail, setSessionEmail] = useState<string | null>(null);
   const [savedRow, setSavedRow] = useState<any | null>(null);
-  const [loadState, setLoadState] = useState<"idle" | "loading" | "error">("idle");
+  const [loadState, setLoadState] =
+    useState<"idle" | "loading" | "error">("idle");
 
   useEffect(() => {
     (async () => {
       const { data } = await supabase.auth.getSession();
       const user = data.session?.user;
-      const email = user?.email ?? null;
-      setSessionEmail(email);
+      setSessionEmail(user?.email ?? null);
 
       if (!user) return;
-// Homeを経由しないアクセスでもSceneがズレないようにする
-const current = await computeCurrentScene(supabase, user.id);
-setSceneToStorage(current);
+
+      // Home を経由しない場合も Scene を DB 基準で補正
+      const current = await computeCurrentScene(supabase, user.id);
+      setSceneToStorage(current);
 
       setLoadState("loading");
       const { data: row, error } = await supabase
@@ -34,36 +44,18 @@ setSceneToStorage(current);
         .eq("round_n", round.n)
         .maybeSingle();
 
-      if (error) {
-        console.log("LOAD ERROR", error);
-        setLoadState("error");
-        return;
-      }
-
-      setSavedRow(row ?? null);
+      if (!error) setSavedRow(row ?? null);
       setLoadState("idle");
     })();
-  }, [supabase, round.n]);
+  }, [supabase, round.n, sceneN]);
 
   if (!sessionEmail) {
     return (
-      <section
-        style={{
-          marginTop: 12,
-          border: "1px solid rgba(0,0,0,0.12)",
-          borderRadius: 16,
-          padding: 14,
-        }}
-      >
-        <div style={{ fontWeight: 700 }}>ログインが必要です</div>
-        <div style={{ opacity: 0.85, marginTop: 6 }}>/login からログインしてください。</div>
+      <section style={{ marginTop: 12 }}>
+        <strong>ログインが必要です</strong>
       </section>
     );
   }
-
-  // ここは後でRound定義に移せます。今は表示が崩れない最小固定。
-  const jpSupplementS1 = "懸念点を端的に伝える（何が問題かを明確にする）。";
-  const jpSupplementS2 = "対応策を提案する（次に何をするかを示す）。";
 
   const handleSubmit = async (payload: {
     answer1: string;
@@ -71,13 +63,9 @@ setSceneToStorage(current);
     isCorrect: boolean;
     wrongTokens: string[];
   }) => {
-    const { data: sessionData } = await supabase.auth.getSession();
-    const user = sessionData.session?.user;
-
-    if (!user) {
-      alert("Not signed in");
-      return;
-    }
+    const { data } = await supabase.auth.getSession();
+    const user = data.session?.user;
+    if (!user) return;
 
     const { data: upserted, error } = await supabase
       .from("submissions")
@@ -95,13 +83,7 @@ setSceneToStorage(current);
       .select("*")
       .single();
 
-    if (error) {
-      console.log("UPSERT ERROR", error);
-      alert(`Save failed: ${error.message}`);
-      return;
-    }
-
-    setSavedRow(upserted);
+    if (!error) setSavedRow(upserted);
   };
 
   return (
@@ -111,65 +93,47 @@ setSceneToStorage(current);
         target2={round.targetTokens2}
         extra={round.extraTokens}
         onSubmit={handleSubmit}
+        sentence1RoleJa={roles.s1}
+        sentence2RoleJa={roles.s2}
       />
 
-{savedRow && (
+      <div
+        style={{
+          marginTop: 14,
+          border: "1px solid rgba(0,0,0,0.12)",
+          borderRadius: 16,
+          padding: 14,
+          background:
+            savedRow?.status === "Correct"
+              ? "rgba(0,128,0,0.06)"
+              : savedRow?.status === "Almost"
+              ? "rgba(255,0,0,0.06)"
+              : "white",
+        }}
+      >
+        <div style={{ fontWeight: 800 }}>
+          {chunk?.title ?? "今回使うチャンク"}
+        </div>
+
+        {chunk?.lines.map((line: string, i: number) => (
   <div
+    key={i}
     style={{
-      marginTop: 14,
-      border: "1px solid rgba(0,0,0,0.12)",
-      borderRadius: 16,
-      padding: 14,
-      display: "grid",
-      gap: 10,
-      background:
-        savedRow.status === "Correct"
-          ? "rgba(0, 128, 0, 0.06)"
-          : savedRow.status === "Almost"
-          ? "rgba(255, 0, 0, 0.06)"
-          : "white",
+      fontSize: 16,
+      lineHeight: 1.5,
+      fontWeight: 700,
+      letterSpacing: "0.2px",
     }}
   >
-
-          <div style={{ opacity: 0.92 }}>
-            <div style={{ fontWeight: 700, marginBottom: 6 }}>判定</div>
-            <div>{savedRow.status}</div>
+            {line}
           </div>
+        ))}
 
-          <div style={{ opacity: 0.92 }}>
-            <div style={{ fontWeight: 700, marginBottom: 6 }}>正解</div>
-            <div style={{ whiteSpace: "pre-wrap" }}>
-              {round.targetTokens1.join(" ")}
-              {"\n"}
-              {round.targetTokens2.join(" ")}
-            </div>
-          </div>
-
-          <div style={{ opacity: 0.92 }}>
-            <div style={{ fontWeight: 700, marginBottom: 6 }}>ヒント</div>
-            <div style={{ whiteSpace: "pre-wrap" }}>
-              セリフ①：{jpSupplementS1}
-              {"\n"}
-              セリフ②：{jpSupplementS2}
-            </div>
-          </div>
-
-          <div style={{ opacity: 0.92 }}>
-            <div style={{ fontWeight: 700, marginBottom: 6 }}>講師コメント</div>
-            <div style={{ whiteSpace: "pre-wrap" }}>
-              {loadState === "loading"
-                ? "Loading..."
-                : savedRow.coach_comment
-                ? savedRow.coach_comment
-                : "まだありません"}
-            </div>
-          </div>
-
-          <div style={{ fontSize: 12, opacity: 0.65 }}>
-            保存状況: {savedRow ? "Saved" : "Not saved yet"}
-          </div>
+        <div style={{ marginTop: 8 }}>
+          <strong>講師コメント</strong>
+          <div>{savedRow?.coach_comment || "—"}</div>
         </div>
-      )}
+      </div>
     </section>
   );
 }

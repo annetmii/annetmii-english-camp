@@ -6,6 +6,8 @@ type Props = {
   target1: string[];
   target2: string[];
   extra?: string[];
+  sentence1RoleJa?: string;
+  sentence2RoleJa?: string;
   onSubmit: (payload: {
     answer1: string;
     answer2: string;
@@ -22,6 +24,15 @@ function format(tokens: string[]) {
 
 function toTokens(list: string[], offset: number) {
   return list.map((text, idx) => ({ id: `${offset + idx}-${text}`, text }));
+}
+
+function shuffleTokens<T>(list: T[]) {
+  const arr = [...list];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
 }
 
 function calcWrongTokens(picked: string[], target: string[]) {
@@ -41,10 +52,19 @@ export default function TapTwoSentenceBuilder({
   target1,
   target2,
   extra = [],
+  sentence1RoleJa,
+  sentence2RoleJa,
   onSubmit,
 }: Props) {
-  const pool1 = useMemo(() => toTokens([...target1, ...extra], 0), [target1, extra]);
-  const pool2 = useMemo(() => toTokens([...target2, ...extra], 10_000), [target2, extra]);
+  const pool1 = useMemo(() => {
+    const tokens = toTokens([...target1, ...extra], 0);
+    return shuffleTokens(tokens);
+  }, [target1, extra]);
+
+  const pool2 = useMemo(() => {
+    const tokens = toTokens([...target2, ...extra], 10_000);
+    return shuffleTokens(tokens);
+  }, [target2, extra]);
 
   const [used1, setUsed1] = useState<Set<string>>(new Set());
   const [used2, setUsed2] = useState<Set<string>>(new Set());
@@ -155,7 +175,9 @@ export default function TapTwoSentenceBuilder({
  
         <div style={{ display: "grid", gap: 10 }}>
           <div style={sentenceBox}>
-            <div style={sentenceLabel}>Sentence 1</div>
+            <div style={sentenceLabel}>
+              Sentence 1{sentence1RoleJa ? `｜${sentence1RoleJa}` : ""}
+            </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
               {picked1.length ? (
                 picked1.map((t) => (
@@ -170,7 +192,9 @@ export default function TapTwoSentenceBuilder({
           </div>
 
           <div style={sentenceBox}>
-            <div style={sentenceLabel}>Sentence 2</div>
+            <div style={sentenceLabel}>
+              Sentence 2{sentence2RoleJa ? `｜${sentence2RoleJa}` : ""}
+            </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
               {picked2.length ? (
                 picked2.map((t) => (
